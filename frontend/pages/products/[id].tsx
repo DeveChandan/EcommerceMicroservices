@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
+import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useCart } from '../../context/CartContext';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { fetchProductById } from '../../services/api';
+import { useCart } from '../../context/CartContext';
+import mockProducts from '../../mockData/products.json';
 
 type Product = {
   id: number;
@@ -12,13 +16,15 @@ type Product = {
   inventory: number;
 };
 
-export default function ProductDetail() {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [quantity, setQuantity] = useState(1);
+const ProductDetail: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  
+  const [product, setProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -26,18 +32,33 @@ export default function ProductDetail() {
 
     const loadProduct = async () => {
       try {
+        setIsLoading(true);
+        
+        // For development, use mock data
+        const mockProduct = mockProducts.find(p => p.id === Number(id));
+        if (mockProduct) {
+          setProduct(mockProduct);
+          setIsLoading(false);
+          return;
+        }
+        
+        // If mock data not found or in production, make API call
         const data = await fetchProductById(Number(id));
         setProduct(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch product:', error);
+        setIsLoading(false);
+      } catch (err) {
+        console.error(`Error fetching product ${id}:`, err);
         setError('Failed to load product details. Please try again later.');
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     loadProduct();
   }, [id]);
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setQuantity(parseInt(e.target.value));
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -47,105 +68,116 @@ export default function ProductDetail() {
       name: product.name,
       price: product.price,
       imageUrl: product.imageUrl,
-      quantity: quantity
+      quantity: quantity,
     });
     
     router.push('/cart');
   };
 
-  const incrementQuantity = () => {
-    if (product && quantity < product.inventory) {
-      setQuantity(quantity + 1);
-    }
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-
-  if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading product details...</div>;
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center h-64">
+          <p className="text-gray-500">Loading product details...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="container mx-auto px-4 py-8 text-red-500">{error}</div>;
-  }
-
-  if (!product) {
-    return <div className="container mx-auto px-4 py-8">Product not found</div>;
+  if (error || !product) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <span className="block sm:inline">{error || 'Product not found'}</span>
+        </div>
+        <Link href="/products">
+          <a className="text-blue-600 hover:underline">← Back to Products</a>
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/2">
-          <div className="bg-gray-100 rounded-lg flex items-center justify-center h-80">
-            {product.imageUrl ? (
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                className="object-contain max-h-full max-w-full"
-              />
-            ) : (
-              <div className="text-gray-500">No image available</div>
-            )}
-          </div>
-        </div>
-        
-        <div className="md:w-1/2">
-          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-          <p className="text-2xl text-blue-600 font-bold mb-4">${product.price.toFixed(2)}</p>
-          <div className="mb-6">
-            <p className="text-gray-700 whitespace-pre-line">{product.description}</p>
-          </div>
-          
-          <div className="mb-6">
-            <p className="text-sm text-gray-600 mb-2">Availability: {product.inventory > 0 ? 'In Stock' : 'Out of Stock'}</p>
-            {product.inventory > 0 && (
-              <p className="text-sm text-gray-600">{product.inventory} items left</p>
-            )}
-          </div>
-          
-          {product.inventory > 0 ? (
-            <>
-              <div className="flex items-center mb-6">
-                <label htmlFor="quantity" className="mr-4">Quantity:</label>
-                <div className="flex items-center border rounded">
-                  <button 
-                    onClick={decrementQuantity}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300"
-                  >
-                    -
-                  </button>
-                  <span className="px-4 py-1">{quantity}</span>
-                  <button 
-                    onClick={incrementQuantity}
-                    className="px-3 py-1 bg-gray-200 hover:bg-gray-300"
-                  >
-                    +
-                  </button>
+      <Link href="/products">
+        <a className="text-blue-600 hover:underline mb-6 inline-block">
+          ← Back to Products
+        </a>
+      </Link>
+      
+      <div className="bg-white rounded-lg shadow-md overflow-hidden mt-4">
+        <div className="md:flex">
+          <div className="md:w-1/2">
+            <div className="relative h-80 w-full md:h-full">
+              {product.imageUrl ? (
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full bg-gray-200">
+                  <span className="text-gray-500">No image available</span>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="p-6 md:w-1/2">
+            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+            <p className="text-gray-600 mb-4">{product.description}</p>
+            
+            <div className="mb-6">
+              <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
               
-              <button
-                onClick={handleAddToCart}
-                className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition w-full md:w-auto"
-              >
-                Add to Cart
-              </button>
-            </>
-          ) : (
+              {product.inventory <= 5 && product.inventory > 0 && (
+                <p className="text-sm text-orange-600 mt-1">
+                  Only {product.inventory} left in stock!
+                </p>
+              )}
+              
+              {product.inventory <= 0 && (
+                <p className="text-sm text-red-600 mt-1">Out of stock</p>
+              )}
+            </div>
+            
+            {product.inventory > 0 && (
+              <div className="mb-6">
+                <label htmlFor="quantity" className="block text-gray-700 mb-2">
+                  Quantity:
+                </label>
+                <select
+                  id="quantity"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="border rounded p-2 w-24"
+                >
+                  {[...Array(Math.min(10, product.inventory))].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {i + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
             <button
-              disabled
-              className="bg-gray-400 text-white py-2 px-6 rounded-md w-full md:w-auto cursor-not-allowed"
+              onClick={handleAddToCart}
+              disabled={product.inventory <= 0}
+              className={`w-full py-3 px-4 rounded-md font-semibold ${
+                product.inventory > 0
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-400 text-gray-100 cursor-not-allowed'
+              }`}
             >
-              Out of Stock
+              {product.inventory > 0 ? 'Add to Cart' : 'Out of Stock'}
             </button>
-          )}
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ProductDetail;
