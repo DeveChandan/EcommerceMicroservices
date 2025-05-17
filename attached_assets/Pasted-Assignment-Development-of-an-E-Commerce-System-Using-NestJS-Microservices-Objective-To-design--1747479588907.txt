@@ -1,0 +1,66 @@
+Assignment: Development of an E-Commerce System Using NestJS Microservices
+
+Objective:
+To design, develop, and demonstrate an end-to-end e-commerce system consisting of two
+microservices that interact through RabbitMQ. The system will handle product, order, and
+customer management, ensuring smooth synchronization between the two microservices.
+This assignment will assess your ability to conceptualize, develop, and execute
+microservice-based architectures, as well as your problem-solving and technical skills.
+
+Project Overview
+You are tasked with building a basic e-commerce system using the following stack:
+● Backend (Microservices): NestJS
+● Database: PostgreSQL
+● Message Broker: RabbitMQ
+● Frontend: Next.js
+The system must be composed of two microservices:
+1. Product & Order Management Service
+2. Customer Management Service
+These microservices will communicate with each other using RabbitMQ. The goal is to
+ensure that whenever a customer places an order, the system will synchronize the customer
+and order data between the microservices via RabbitMQ.
+
+Assignment Scope
+Develop an e-commerce system using NestJS, structured into two distinct microservices:
+one dedicated to handling Products and Orders, and the other focused on managing
+Customers. These microservices must communicate with each other using RabbitMQ. When
+a customer places a purchase, ensure that the databases for both microservices are
+updated and synchronized through RabbitMQ. Your objective is to build the complete
+workflow for this foundational e-commerce scenario.
+
+Technical Requirements
+● Backend (NestJS)
+○ Use the NestJS framework to develop the microservices.
+
+○ Create RESTful APIs for managing CRUD operations on Products, Orders,
+and Customers.
+○ Use TypeORM (or any ORM) to connect to the PostgreSQL database.
+○ Write database migration scripts for setting up and seeding initial data for
+both microservices.
+○ Implement RabbitMQ to send and receive messages between the
+microservices.
+○ Properly handle error handling, validation, and input sanitization.
+○ Follow SOLID principles and best practices for code structure and
+modularity.
+● Frontend (Next.js)
+○ Create a simple frontend using Next.js.
+○ The frontend should allow:
+■ Viewing the list of products.
+■ Adding a product to an order (cart).
+■ Checking out the order as a customer.
+■ Displaying the customer's order history after checkout.
+○ Use basic components and ensure it is user-friendly and functional, but the
+visual design can be minimal.
+
+● Database (PostgreSQL)
+○ Use PostgreSQL for database storage.
+○ Each microservice should have its own isolated database.
+○ Design a proper database schema for both the Product & Order Service and
+the Customer Service.
+○ Data consistency must be maintained across services.
+● RabbitMQ
+○ Properly configure RabbitMQ channels, queues, and exchanges for
+communication.
+○ Ensure reliable message delivery between the two microservices.
+○ Implement event-driven communication so that updates in one service
+trigger updates in the other.
