@@ -1,4 +1,8 @@
 import axios from 'axios';
+// Import mock data for development
+import mockProducts from '../mockData/products.json';
+
+const USE_MOCK_DATA = true; // Set to false when backend is ready
 
 const api = axios.create({
   baseURL: '/api',
@@ -21,6 +25,10 @@ api.interceptors.request.use(
 
 // Product API Calls
 export const fetchProducts = async () => {
+  if (USE_MOCK_DATA) {
+    return mockProducts;
+  }
+  
   try {
     const response = await api.get('/products');
     return response.data;
