@@ -19,16 +19,20 @@ interface ProductCardProps {
 const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="relative h-48 w-full">
+      <div className="relative h-48 w-full" style={{ position: 'relative' }}>
         {product.imageUrl ? (
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            layout="fill"
-            objectFit="cover"
-          />
+          <div className="w-full h-full bg-gray-100 rounded-t-lg overflow-hidden">
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = `https://via.placeholder.com/300x300.png?text=${encodeURIComponent(product.name)}`;
+              }}
+            />
+          </div>
         ) : (
-          <div className="flex items-center justify-center h-full bg-gray-200">
+          <div className="flex items-center justify-center h-full bg-gray-200 rounded-t-lg">
             <span className="text-gray-500">No image available</span>
           </div>
         )}

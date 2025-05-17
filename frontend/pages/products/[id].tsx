@@ -108,16 +108,20 @@ const ProductDetail: NextPage = () => {
       <div className="bg-white rounded-lg shadow-md overflow-hidden mt-4">
         <div className="md:flex">
           <div className="md:w-1/2">
-            <div className="relative h-80 w-full md:h-full">
+            <div className="relative h-80 w-full md:h-96" style={{ position: 'relative' }}>
               {product.imageUrl ? (
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  layout="fill"
-                  objectFit="cover"
-                />
+                <div className="w-full h-full bg-gray-100 rounded-lg overflow-hidden">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-cover rounded-lg shadow-md"
+                    onError={(e) => {
+                      e.currentTarget.src = `https://via.placeholder.com/600x400.png?text=${encodeURIComponent(product.name)}`;
+                    }}
+                  />
+                </div>
               ) : (
-                <div className="flex items-center justify-center h-full bg-gray-200">
+                <div className="flex items-center justify-center h-full bg-gray-200 rounded-lg">
                   <span className="text-gray-500">No image available</span>
                 </div>
               )}
