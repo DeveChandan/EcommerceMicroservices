@@ -8,12 +8,11 @@ const Login: NextPage = () => {
   const router = useRouter();
   const { redirect } = router.query;
   const { login, isAuthenticated } = useAuth();
-  
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
 
   // If user is already authenticated, redirect to home or specified redirect path
   useEffect(() => {
@@ -25,43 +24,20 @@ const Login: NextPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim() || !password.trim()) {
       setError('Please enter both email and password');
       return;
     }
-    
+
     try {
       setIsLoading(true);
       setError(null);
-      
-      // For demonstration purposes in development, simulate successful login
-      if (process.env.NODE_ENV === 'development') {
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          // Simulate login with mock data
-          const mockUser = {
-            id: 1,
-            firstName: 'Demo',
-            lastName: 'User',
-            email: email,
-          };
-          localStorage.setItem('token', 'mock-token-for-development');
-          localStorage.setItem('userId', '1');
-          
-          // Redirect after successful login
-          const redirectPath = typeof redirect === 'string' ? redirect : '/';
-          router.push(redirectPath);
-        }, 1500);
-        return;
-      }
-      
-      // Production code
+
       await login(email, password);
-      
+
       // Redirect handled by the useEffect hook monitoring isAuthenticated
     } catch (err: any) {
-      console.error('Login failed:', err);
       setError(err.message || 'Invalid email or password. Please try again.');
       setIsLoading(false);
     }
@@ -85,18 +61,12 @@ const Login: NextPage = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {showSuccessMessage && (
-            <div className="mb-4 bg-green-50 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-              <span className="block sm:inline">Login successful! Redirecting...</span>
-            </div>
-          )}
-          
           {error && (
             <div className="mb-4 bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative">
               <span className="block sm:inline">{error}</span>
             </div>
           )}
-          
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -195,17 +165,18 @@ const Login: NextPage = () => {
                   href="#"
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
+                  {/* Social login icon */}
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fillRule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.338-3.369-1.338-.454-1.153-1.11-1.46-1.11-1.46-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.022A9.578 9.578 0 0110 4.836c.85.004 1.705.114 2.504.336 1.909-1.29 2.747-1.022 2.747-1.022.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.841-2.337 4.687-4.565 4.934.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.137 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z" clipRule="evenodd" />
                   </svg>
                 </a>
               </div>
-
               <div>
                 <a
                   href="#"
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
+                  {/* Social login icon */}
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fillRule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 5.523 4.477 10 10 10 5.523 0 10-4.477 10-10 0-5.523-4.477-10-10-10zm6.355 14.929c-.23.324-.678.45-1.016.226C14.196 14.5 12.466 14 10 14c-2.398 0-4.208.494-5.342 1.154-.339.22-.784.091-1.006-.24-.22-.332-.091-.78.236-1.006C5.213 13.114 7.39 12.5 10 12.5c2.589 0 4.838.614 6.136 1.41.334.213.46.658.219 1.019zm-1.637-3.195c-.279.387-.814.532-1.225.262C12.154 11.125 11.015 10 8.5 10c-2.403 0-3.954 1.165-5.005 1.998-.423.265-.953.115-1.22-.29-.268-.406-.117-.944.28-1.215C4.045 9.458 6.005 8 8.5 8c3.025 0 4.717 1.417 6.105 2.53.391.255.536.78.113 1.204zM17.5 6.75c-.316.454-.944.578-1.394.297-2.266-1.364-5.264-2.297-9.106-2.297-3.808 0-6.966.956-9.228 2.32-.433.261-1.055.125-1.367-.299-.31-.424-.155-1.061.266-1.386C2.157 2.989 5.756 2 7 2c4.394 0 7.958 1.064 10.51 2.648.427.261.56.874.24 1.352z" clipRule="evenodd" />
                   </svg>

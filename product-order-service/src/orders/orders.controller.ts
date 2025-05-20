@@ -12,18 +12,18 @@ import { OrdersService } from './orders.service';
 import { Order, OrderStatus } from './entities/order.entity';
 
 class OrderItemDto {
-  productId: number;
-  quantity: number;
+  productId!: number;
+  quantity!: number;
 }
 
 class CreateOrderDto {
-  customerId: number;
-  items: OrderItemDto[];
-  shippingAddress: string;
+  customerId!: number;
+  items!: OrderItemDto[];
+  shippingAddress!: string;
 }
 
 class UpdateOrderStatusDto {
-  status: OrderStatus;
+  status!: OrderStatus;
 }
 
 @Controller('orders')
@@ -54,7 +54,7 @@ export class OrdersController {
     try {
       return await this.ordersService.create(createOrderDto);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException((error as any).message, HttpStatus.BAD_REQUEST);
     }
   }
 

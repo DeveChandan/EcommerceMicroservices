@@ -11,32 +11,32 @@ import { CustomerOrder } from './customer-order.entity';
 @Entity()
 export class Customer {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  firstName: string;
+  firstName!: string;
 
   @Column()
-  lastName: string;
+  lastName!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  password: string; // In a real app, this would be hashed
+  password!: string; // In a real app, this would be hashed
 
   @Column({ nullable: true })
-  address: string;
+  address?: string;
 
   @Column({ nullable: true })
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @OneToMany(() => CustomerOrder, order => order.customer)
-  orders: CustomerOrder[];
+  orders!: CustomerOrder[];
 }

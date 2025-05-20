@@ -11,25 +11,25 @@ import { Product } from '../../products/entities/product.entity';
 @Entity()
 export class OrderItem {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  orderId: number;
+  orderId!: number;
 
   @Column()
-  productId: number;
+  productId!: number;
 
   @Column()
-  quantity: number;
+  quantity!: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  price: number;
+  price!: number;
 
   @ManyToOne(() => Order, order => order.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'orderId' })
-  order: Order;
+  order!: Order;
 
   @ManyToOne(() => Product, product => product.orderItems)
   @JoinColumn({ name: 'productId' })
-  product: Product;
+  product!: Product;
 }

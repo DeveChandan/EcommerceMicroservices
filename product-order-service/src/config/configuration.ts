@@ -1,8 +1,8 @@
 export default () => ({
-  port: parseInt(process.env.PRODUCT_ORDER_SERVICE_PORT, 10) || 8000,
+ // port: parseInt(process.env.PRODUCT_ORDER_SERVICE_PORT, 10) || 8000,
   database: {
     host: process.env.PGHOST,
-    port: parseInt(process.env.PGPORT, 10) || 5432,
+    port:process.env.PGPORT|| 5432,
     username: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE || 'product_order_db',

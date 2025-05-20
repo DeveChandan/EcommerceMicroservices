@@ -46,6 +46,7 @@ const ProductDetail: NextPage = () => {
         const data = await fetchProductById(Number(id));
         setProduct(data);
         setIsLoading(false);
+        console.log('Product data:', data);
       } catch (err) {
         console.error(`Error fetching product ${id}:`, err);
         setError('Failed to load product details. Please try again later.');
@@ -127,7 +128,9 @@ const ProductDetail: NextPage = () => {
             <p className="text-gray-600 mb-4">{product.description}</p>
             
             <div className="mb-6">
-              <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
+               <span className="font-bold text-lg text-gray-900">
+              ${Number(product.price).toFixed(2)}
+            </span>
               
               {product.inventory <= 5 && product.inventory > 0 && (
                 <p className="text-sm text-orange-600 mt-1">

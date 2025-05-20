@@ -12,13 +12,15 @@ import { RmqService } from './rmq.service';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.get<string>('rabbitmq.uri')],
-            queue: configService.get<string>('rabbitmq.queues.customerUpdated'),
+            urls: [
+              configService.get<string>('rabbitmq.uri') || 'amqp://localhost:5672'
+            ],
+            queue: configService.get<string>('rabbitmq.queues.customerUpdated') || 'customer_updated_queue',
             queueOptions: {
               durable: true,
             },
-            exchange: configService.get<string>('rabbitmq.exchange'),
-            noAck: false,
+            exchange: configService.get<string>('rabbitmq.exchange') || 'ecommerce_exchange',
+            noAck: true,
           },
         }),
         inject: [ConfigService],

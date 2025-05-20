@@ -12,13 +12,15 @@ import { RmqService } from './rmq.service';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.get<string>('rabbitmq.uri')],
-            queue: configService.get<string>('rabbitmq.queues.orderCreated'),
+            urls: [
+              configService.get<string>('rabbitmq.uri') || 'amqp://localhost:5672'
+            ],
+            queue: configService.get<string>('rabbitmq.queues.orderCreated') || 'order_created_queue',
             queueOptions: {
               durable: true,
             },
-            exchange: configService.get<string>('rabbitmq.exchange'),
-            noAck: false,
+            exchange: configService.get<string>('rabbitmq.exchange') || 'ecommerce_exchange',
+            noAck: true,
           },
         }),
         inject: [ConfigService],
@@ -28,4 +30,14 @@ import { RmqService } from './rmq.service';
   providers: [RmqService],
   exports: [RmqService],
 })
-export class RmqModule {}
+export class RmqModule {
+  constructor(private readonly rmqService: RmqService) {}
+
+  async onModuleInit() {
+    this.rmqService.getClient().connect();
+  }
+
+  async onModuleDestroy() {
+    this.rmqService.getClient().close();
+  }
+}

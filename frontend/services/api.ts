@@ -1,22 +1,31 @@
 import axios from 'axios';
-// Import mock data for development
 import mockProducts from '../mockData/products.json';
 
-const USE_MOCK_DATA = true; // Set to false when backend is ready
+const USE_MOCK_DATA = false; // Set to false to use real backend
 
-const api = axios.create({
-  baseURL: '/api',
+// Separate API instances for customer and product/order services
+export const customerApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL_USER || 'http://localhost:8001',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add token to requests if available
-api.interceptors.request.use(
+export const productApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL_PRODUCT || 'http://localhost:8000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add token to customer requests if available
+customerApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -28,94 +37,48 @@ export const fetchProducts = async () => {
   if (USE_MOCK_DATA) {
     return mockProducts;
   }
-  
-  try {
-    const response = await api.get('/products');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    throw error;
-  }
+  const response = await productApi.get('/products');
+  return response.data;
 };
 
 export const fetchProductById = async (id: number) => {
-  try {
-    const response = await api.get(`/products/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching product ${id}:`, error);
-    throw error;
-  }
+  const response = await productApi.get(`/products/${id}`);
+  return response.data;
 };
 
-// Order API Calls
+// Order API Calls (use productApi if orders are handled by product-order-service)
 export const createOrder = async (orderData: any) => {
-  try {
-    const response = await api.post('/orders', orderData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating order:', error);
-    throw error;
-  }
+  const response = await productApi.post('/orders', orderData);
+  return response.data;
 };
 
 export const fetchOrderById = async (id: number) => {
-  try {
-    const response = await api.get(`/orders/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching order ${id}:`, error);
-    throw error;
-  }
+  const response = await productApi.get(`/orders/${id}`);
+  return response.data;
 };
 
 // Customer API Calls
 export const registerCustomer = async (customerData: any) => {
-  try {
-    const response = await api.post('/customers', customerData);
-    return response.data;
-  } catch (error) {
-    console.error('Error registering customer:', error);
-    throw error;
-  }
+  const response = await customerApi.post('/customers', customerData);
+  return response.data;
 };
 
 export const loginCustomer = async (email: string, password: string) => {
-  try {
-    const response = await api.post('/customers/login', { email, password });
-    return response.data;
-  } catch (error) {
-    console.error('Error logging in:', error);
-    throw error;
-  }
+  const response = await customerApi.post('/customers/login', { email, password });
+  return response.data;
 };
 
 export const fetchCustomerById = async (id: number) => {
-  try {
-    const response = await api.get(`/customers/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching customer ${id}:`, error);
-    throw error;
-  }
+  const response = await customerApi.get(`/customers/${id}`);
+  return response.data;
 };
 
 export const updateCustomer = async (id: number, customerData: any) => {
-  try {
-    const response = await api.patch(`/customers/${id}`, customerData);
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating customer ${id}:`, error);
-    throw error;
-  }
+  const response = await customerApi.put(`/customers/${id}`, customerData);
+  return response.data;
 };
 
 export const fetchCustomerOrders = async (customerId: number) => {
-  try {
-    const response = await api.get(`/customers/${customerId}/orders`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching orders for customer ${customerId}:`, error);
-    throw error;
-  }
+  const response = await customerApi.get(`/customers/${customerId}/orders`);
+  return response.data;
 };

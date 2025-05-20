@@ -19,28 +19,28 @@ export enum OrderStatus {
 @Entity()
 export class CustomerOrder {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  orderId: number; // ID from the order service
+  orderId!: number; // ID from the order service
 
   @Column()
-  customerId: number;
+  customerId!: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  totalAmount: number;
+  totalAmount!: number;
 
   @Column({
     type: 'enum',
     enum: OrderStatus,
     default: OrderStatus.PENDING,
   })
-  status: OrderStatus;
+  status!: OrderStatus;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @ManyToOne(() => Customer, customer => customer.orders)
   @JoinColumn({ name: 'customerId' })
-  customer: Customer;
+  customer!: Customer;
 }

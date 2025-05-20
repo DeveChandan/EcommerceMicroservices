@@ -84,7 +84,7 @@ export default function Orders() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">${order.totalAmount.toFixed(2)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">${Number(order.totalAmount).toFixed(2)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                       ${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 

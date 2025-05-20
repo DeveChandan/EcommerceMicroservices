@@ -6,7 +6,7 @@ type Product = {
   id: number;
   name: string;
   description: string;
-  price: number;
+  price: number | string;
   imageUrl: string;
   inventory: number;
 };
@@ -46,7 +46,9 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         
         <div className="mt-auto">
           <div className="flex justify-between items-center mb-3">
-            <span className="font-bold text-lg text-gray-900">${product.price.toFixed(2)}</span>
+            <span className="font-bold text-lg text-gray-900">
+              ${Number(product.price).toFixed(2)}
+            </span>
             
             <div className="flex space-x-1">
               <Link href={`/products/${product.id}`}>

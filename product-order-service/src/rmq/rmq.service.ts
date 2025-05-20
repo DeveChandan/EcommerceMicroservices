@@ -8,6 +8,10 @@ export class RmqService {
     @Inject('ECOMMERCE_SERVICE') private readonly client: ClientProxy,
   ) {}
 
+  getClient(): ClientProxy {
+    return this.client;
+  }
+
   async publishOrderCreated(order: Order): Promise<void> {
     await this.client.emit('order.created', {
       id: order.id,
@@ -20,6 +24,6 @@ export class RmqService {
         price: item.price,
       })),
       createdAt: order.createdAt,
-    });
+    }).toPromise();
   }
 }

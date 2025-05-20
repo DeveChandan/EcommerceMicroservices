@@ -8,10 +8,12 @@ const Navbar = () => {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const { cartItems } = useCart();
-  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -21,11 +23,14 @@ const Navbar = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isDropdownOpen) {
+      if (
+        isDropdownOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -37,6 +42,15 @@ const Navbar = () => {
     router.push('/');
     setIsDropdownOpen(false);
     setIsMobileMenuOpen(false);
+  };
+
+  const handleProfile = () => {
+    if (isAuthenticated) {
+      router.push('/profile');
+      setIsDropdownOpen(false);
+    } else {
+      router.push('/login?redirect=profile');
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -99,7 +113,7 @@ const Navbar = () => {
                   </a>
                 </Link>
                 
-                <div className="relative">
+                <div className="relative" ref={dropdownRef}>
                   <button 
                     onClick={toggleDropdown}
                     className="flex items-center hover:text-blue-200 transition font-medium focus:outline-none"
@@ -120,9 +134,7 @@ const Navbar = () => {
                   </button>
                   {isDropdownOpen && (
                     <div className="absolute right-0 w-48 bg-white rounded-md shadow-lg py-1 mt-2 z-10 transition duration-150 ease-in-out">
-                      <Link href="/profile">
-                        <a className="block px-4 py-2 text-gray-800 hover:bg-blue-100">My Profile</a>
-                      </Link>
+                      <button onClick={handleProfile} className="block px-4 py-2 text-gray-800 hover:bg-blue-100 w-full text-left">My Profile</button>
                       <button 
                         onClick={handleLogout}
                         className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-100"

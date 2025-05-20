@@ -2,8 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['images.unsplash.com', 'source.unsplash.com'],
+    domains: ['images.unsplash.com', 'source.unsplash.com','m.media-amazon.com','imgs.search.brave.com'],
   },
+
   async rewrites() {
     return [
       {

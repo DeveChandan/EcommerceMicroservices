@@ -41,7 +41,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart }: CartItemProps) => {
       
       <div className="ml-4 flex-grow">
         <h3 className="text-lg font-medium">{item.name}</h3>
-        <p className="text-gray-600">${item.price.toFixed(2)}</p>
+        <p className="text-gray-600">${Number(item.price).toFixed(2)}</p>
       </div>
       
       <div className="flex items-center">

@@ -14,10 +14,10 @@ import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 
 class CreateProductDto {
-  name: string;
-  description: string;
-  price: number;
-  inventory: number;
+  name!: string;
+  description!: string;
+  price!: number;
+  inventory!: number;
   imageUrl?: string;
 }
 
@@ -35,9 +35,11 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async findAll(@Query('active') active?: boolean): Promise<Product[]> {
+  async findAll(@Query('active') active?: string): Promise<Product[]> {
     if (active !== undefined) {
-      return this.productsService.findAllActive(active);
+      // Convert query param to boolean
+      const isActive = active === 'true' || active === '1';
+      return this.productsService.findAllActive(isActive);
     }
     return this.productsService.findAll();
   }

@@ -7,20 +7,18 @@ import {
   Param, 
   HttpStatus, 
   HttpException,
-  UseGuards,
-  Req,
-  EventPattern,
-  Payload
+  Delete,
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { Customer } from './entities/customer.entity';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { CustomerOrder } from './entities/customer-order.entity';
 
 class CreateCustomerDto {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
+  firstName!: string;
+  lastName!: string;
+  email!: string;
+  password!: string;
   address?: string;
   phoneNumber?: string;
 }
@@ -33,8 +31,8 @@ class UpdateCustomerDto {
 }
 
 class LoginDto {
-  email: string;
-  password: string;
+  email!: string;
+  password!: string;
 }
 
 @Controller('customers')
@@ -60,10 +58,10 @@ export class CustomersController {
     try {
       return await this.customersService.create(createCustomerDto);
     } catch (error) {
-      if (error.code === '23505') { // Unique violation in PostgreSQL
+      if ((error as any).code === '23505') { // Unique violation in PostgreSQL
         throw new HttpException('Email already exists', HttpStatus.CONFLICT);
       }
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException((error as any).message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -72,7 +70,11 @@ export class CustomersController {
     @Param('id') id: number,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    return this.customersService.update(id, updateCustomerDto);
+    const updated = await this.customersService.update(id, updateCustomerDto);
+    if (!updated) {
+      throw new HttpException('Customer not found', HttpStatus.NOT_FOUND);
+    }
+    return updated;
   }
 
   @Post('login')
@@ -80,13 +82,22 @@ export class CustomersController {
     try {
       return await this.customersService.validateCustomer(loginDto.email, loginDto.password);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+      throw new HttpException((error as any).message, HttpStatus.UNAUTHORIZED);
     }
   }
 
   @Get(':id/orders')
   async getCustomerOrders(@Param('id') id: number): Promise<CustomerOrder[]> {
     return this.customersService.getCustomerOrders(id);
+  }
+  
+  @Delete(':id')
+  async remove(@Param('id') id: number): Promise<{ message: string }> {
+    const deleted = await this.customersService.remove(id);
+    if (!deleted) {
+      throw new HttpException('Customer not found', HttpStatus.NOT_FOUND);
+    }
+    return { message: 'Customer deleted successfully' };
   }
 
   // RabbitMQ event handler
@@ -95,3 +106,5 @@ export class CustomersController {
     await this.customersService.createCustomerOrder(data);
   }
 }
+
+

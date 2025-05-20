@@ -117,4 +117,9 @@ export class CustomersService {
     
     return this.customerOrderRepository.save(customerOrder);
   }
+
+  async remove(id: number): Promise<boolean> {
+    const result = await this.customerRepository.delete(id);
+    return result.affected !== 0;
+  }
 }
